@@ -1,0 +1,26 @@
+<launch>
+<!-- Nodelet İşlemlerini Denetleyen Yönetici Bölüm : Nodelet Manager -->
+  <node pkg="nodelet" type="nodelet" name="nodelet_manager" output="screen" respawn="true" args="manager"/>
+
+<!-- PointCloud Noktalarını Alıp Düzenleyen ve Bir Kısmını Eleyen Bölüm : CloudThrottle -->
+  <node pkg="nodelet" type="nodelet" name="pointcloud_throttle" args="load pcl_to_scan/CloudThrottle nodelet_manager" respawn="true">
+    <param name="max_rate" value="20.0"/>
+    <remap from="cloud_in" to="/cam3d/depth/points"/>
+    <remap from="cloud_out" to="cloud_throttled"/>
+  </node>
+
+  <!-- Lazer Çıktısı Veren Bölüm : LaserScanner -->
+  <node pkg="nodelet" type="nodelet" name="my_laser_narrow" args="load pcl_to_scan/CloudToScan nodelet_manager" respawn="true">
+    <param name="output_frame_id" value="/kinect"/>
+    <param name="angle_min" value="-0.5233"/>
+    <param name="angle_max" value="0.5233"/>
+    <param name="angle_min" value="-1.57"/>
+    <param name="angle_max" value="1.57"/>
+    <param name="range_min" value="0.01"/>
+    <param name="range_max" value="10.0"/>
+    <param name="min_height" value="0"/>
+    <param name="max_height" value="5"/>
+    <remap from="cloud" to="/cloud_throttled"/>
+    <remap from="scan" to="/scan"/>
+  </node>
+</launch>
